@@ -105,6 +105,7 @@
 // })
 const express=require('express');
 const app = express();
+require('dotenv').config();
 const db=require('./db');
 const Person=require('./models/person');
 const bodyParser = require('body-parser');
@@ -182,6 +183,7 @@ const personRoutes=require('./routes/personRoutes');
 app.use('/person',personRoutes);
 const menuItemRoutes=require('./routes/menuItemRoutes');
 app.use('/menuItem',menuItemRoutes);
-app.listen(3002, () => {
+const PORT=process.env.PORT||3002;
+app.listen(PORT, () => {
   console.log('✅ Server running at http://localhost:3002');
 });
