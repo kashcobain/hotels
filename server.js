@@ -141,7 +141,7 @@ return done(err);
   }
 }))
 app.use(logRequest);
-app.get('/',logRequest,function(req,res){
+app.get('/',passport.authenticate('local',{session:false}),function(req,res){
   res.send('welcome to our hotel');
 })
 
