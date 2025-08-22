@@ -105,17 +105,50 @@
 // })
 const express=require('express');
 const app = express();
+const passport=require('passport');
+const localStrategy=require('passport-local').Strategy;
 require('dotenv').config();
 const db=require('./db');
 const Person=require('./models/person');
 const bodyParser = require('body-parser');
 const MenuItem=require('./models/MenuItem');
+const logRequest=(req,res,next)=>{
+  console.log(`${new Date().toLocaleString()} request made to :${req.originalUrl}`);
+  next();
+  
+};
+app.use(passport.initialize());
+//pw ke liye
+passport.use(new localStrategy(async (username,password,done)=>{
+  //authentication logic
+  try{
+    console.log('recieved crredds',username,password);
+    const user=await Person.findOne({username:username});
+    if(!user)
+    {
+      return done(null,false,{message:'incorrect username'});
+      
+    }
+    const isPasswordMatch=user.password==password?true:false;
+    if(isPasswordMatch){
+      return done(null,user);
+    }else{
+      return done(null,false,{message:'incorrect password'});
+    }
 
+  }catch(err){
+return done(err);
+  }
+}))
+app.use(logRequest);
+app.get('/',logRequest,function(req,res){
+  res.send('welcome to our hotel');
+})
 
 app.use(bodyParser.json());//stored in req.body
 
 // Route for home page — accessible at http://localhost:3002/
-app.get('/', (req, res) => {
+app.get('/', logRequest ,(req, res) => {
   res.send('Hello badmos');
 });
 // app.get('/MenuItem',(req,res)=>{
